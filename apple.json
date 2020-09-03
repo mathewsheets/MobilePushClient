@@ -1,0 +1,13 @@
+{
+  "p8privateKey": "",
+  "p8privateKeyId": "",
+  "teamId": "",
+  "appBundleIdentifier": "",
+  "server": "",
+  "deviceToken": "",
+  "payload": {
+    "aps": {
+      "alert": "Hello World!"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+    "csharpextensions.privateMemberPrefix": "_",
+    "files.exclude": {
+        "**/*.js: {\"when\": \"$(basename).ts\"}": true,
+        "**/*.js.map": true,
+        "**/bin": true,
+        "**/obj": true,
+        "**/build": true,
+        "**/node_modules": true
+    }
+}

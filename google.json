@@ -1,0 +1,11 @@
+{
+  "serverKey": "",
+  "senderId": "",
+  "deviceToken": "",
+  "payload": {
+    "notification" : {
+      "title": "New Message",
+      "body": "Hello World!"
+    }
+  }
+}
