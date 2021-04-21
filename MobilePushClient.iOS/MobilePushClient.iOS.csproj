@@ -4,6 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CorePush" Version="2.1.2"/>
+    <PackageReference Include="CorePush" Version="3.0.4"/>
   </ItemGroup>
 </Project>

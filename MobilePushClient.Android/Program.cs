@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using CorePush.Google;
@@ -11,6 +12,9 @@ using static MobilePushClient.Android.GoogleNotification;
 
 namespace MobilePushClient.Android {
     class Program {
+
+        private static readonly HttpClient http = new HttpClient();
+
         static async Task Main (string[] args) {
 
             var path = args.Length > 0 ? args[0] : Path.Combine(Directory.GetCurrentDirectory(), "google.json");
@@ -20,13 +24,17 @@ namespace MobilePushClient.Android {
             var senderId = json["senderId"].ToString();
             var deviceToken = json["deviceToken"].ToString();
 
+            var settings = new FcmSettings
+            {
+                SenderId = senderId,
+                ServerKey = serverKey
+            };
+
             var notification = json["payload"].ToObject<GoogleNotification>();
 
-            using (var fcm = new FcmSender (serverKey, senderId)) {
-
-                var result = await fcm.SendAsync (deviceToken, notification);
-                Console.WriteLine($"Result: {JsonConvert.SerializeObject(result)}");
-            }
+            var fcm = new FcmSender(settings, http);
+            var response = await fcm.SendAsync(deviceToken, notification);
+            Console.WriteLine($"Response: {JsonConvert.SerializeObject(response)}");
         }
     }
 
