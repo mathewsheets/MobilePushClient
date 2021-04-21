@@ -8,7 +8,6 @@ using CorePush.Google;
 using Newtonsoft.Json;
 
 using Newtonsoft.Json.Linq;
-using static MobilePushClient.Android.GoogleNotification;
 
 namespace MobilePushClient.Android {
     class Program {

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
+
+using System.Net.Http;
+
 using System.Threading.Tasks;
 
 using CorePush.Apple;
 
 using Newtonsoft.Json;
-using static MobilePushClient.iOS.AppleNotification;
 using Newtonsoft.Json.Linq;
-using System.Net.Http;
+
 
 namespace MobilePushClient.iOS {
     class Program {
