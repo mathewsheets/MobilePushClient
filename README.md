@@ -1,3 +1,2 @@
 # MobilePushClient
-DotNetCore iOS/Android Push Notification Client
-
+.net8 iOS/Android Push Notification Client
