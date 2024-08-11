@@ -1,54 +1,70 @@
-﻿using System;
+﻿using CorePush.Firebase;
+using System;
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-using CorePush.Google;
-
-using Newtonsoft.Json;
-
-using Newtonsoft.Json.Linq;
-
-namespace MobilePushClient.Android {
-    class Program {
-
-        private static readonly HttpClient http = new HttpClient();
-
-        static async Task Main (string[] args) {
-
+namespace MobilePushClient.Android
+{
+    class Program
+    {
+        static async Task Main (string[] args)
+        {
             var path = args.Length > 0 ? args[0] : Path.Combine(Directory.GetCurrentDirectory(), "google.json");
-            var json = JObject.Parse(File.ReadAllText(path));
+            var json = await File.ReadAllTextAsync(path);
+            var config = JsonSerializer.Deserialize<GoogleConfig>(json);
+            var settings = GetSettings(config);
+            var response = await new FirebaseSender(settings, new HttpClient()).SendAsync(config.Payload);
+            Console.WriteLine($"Response: {JsonSerializer.Serialize(response)}");        
+        }
 
-            var serverKey = json["serverKey"].ToString();
-            var senderId = json["senderId"].ToString();
-            var deviceToken = json["deviceToken"].ToString();
-
-            var settings = new FcmSettings
-            {
-                SenderId = senderId,
-                ServerKey = serverKey
-            };
-
-            var notification = json["payload"].ToObject<GoogleNotification>();
-
-            var fcm = new FcmSender(settings, http);
-            var response = await fcm.SendAsync(deviceToken, notification);
-            Console.WriteLine($"Response: {JsonConvert.SerializeObject(response)}");
+        private static FirebaseSettings GetSettings(GoogleConfig config)
+        {
+            return new FirebaseSettings(config.ProjectId, config.PrivateKey, config.ClientEmail, config.TokenUri);
         }
     }
 
-    public class GoogleNotification {
+    internal class GoogleConfig
+    {
+        [JsonPropertyName("project_id")]
+        public string ProjectId { get; set; }
 
-        [JsonProperty ("notification")]
-        public Payload Data { get; set; }
+        [JsonPropertyName("private_key")]
+        public string PrivateKey { get; set; }
 
-        public class Payload {
+        [JsonPropertyName("client_email")]
+        public string ClientEmail { get; set; }
 
-            [JsonProperty ("title")]
-            public string Title { get; set; }
+        [JsonPropertyName("token_uri")]
+        public string TokenUri { get; set; }
 
-            [JsonProperty ("body")]
-            public string Body { get; set; }
-        }
+        [JsonPropertyName("payload")]
+        public GooglePayload Payload { get; set; }
+    }
+
+    internal class GooglePayload 
+    {
+        [JsonPropertyName("message")]
+        public GoogleMessage Mesasge { get; set; }
+    }
+
+    internal class GoogleMessage
+    {
+        [JsonPropertyName("token")]
+        public string Token { get; set; }
+
+        [JsonPropertyName("notification")]
+        public GoogleNotification Notification { get; set; }
+    }
+
+    internal class GoogleNotification
+    {
+        [JsonPropertyName("title")]
+        public string Title { get; set; }
+
+        [JsonPropertyName("body")]
+        public string Body { get; set; }
     }
 }

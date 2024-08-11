@@ -7,7 +7,7 @@
   "deviceToken": "",
   "payload": {
     "aps": {
-      "alert": "Hello World!"
+      "alert": "This is another LiftOff notification"
     }
   }
 }

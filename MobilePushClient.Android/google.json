@@ -1,0 +1,15 @@
+{
+  "project_id": "",
+  "private_key": "",
+  "client_email": "",
+  "token_uri": "",
+  "payload": {
+    "message": {
+      "token": "",
+      "notification" : {
+        "title": "Hello",
+        "body": "This is another LiftOff notification"
+      }
+    }
+  }
+}

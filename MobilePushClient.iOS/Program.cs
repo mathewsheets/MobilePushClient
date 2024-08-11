@@ -1,59 +1,73 @@
-﻿using System;
+﻿using CorePush.Apple;
+using System;
 using System.IO;
-
 using System.Net.Http;
-
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-using CorePush.Apple;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-
-namespace MobilePushClient.iOS {
-    class Program {
-
-        private static readonly HttpClient http = new HttpClient();
-
-        static async Task Main (string[] args) {
-
+namespace MobilePushClient.iOS
+{
+    class Program
+    {
+        static async Task Main (string[] args)
+        {
             var path = args.Length > 0 ? args[0] : Path.Combine(Directory.GetCurrentDirectory(), "apple.json");
-            var json = JObject.Parse(File.ReadAllText(path));
+            var json = await File.ReadAllTextAsync(path);
+            var config = JsonSerializer.Deserialize<AppleConfig>(json);
+            var settings = GetSettings(config);
+            var response = await new ApnSender(settings, new HttpClient()).SendAsync(config.Payload, config.DeviceToken);
+            Console.WriteLine($"Response: {JsonSerializer.Serialize(response)}");
+        }
 
-            var p8privateKey = json["p8privateKey"].ToString();
-            var p8privateKeyId = json["p8privateKeyId"].ToString();
-            var teamId = json["teamId"].ToString();
-            var appBundleIdentifier = json["appBundleIdentifier"].ToString();
-            var server = json["server"].ToString().Equals("Development") ? CorePush.Apple.ApnServerType.Development : CorePush.Apple.ApnServerType.Production;
-            var deviceToken = json["deviceToken"].ToString();
-
-            var settings = new ApnSettings
+        private static ApnSettings GetSettings(AppleConfig config)
+        {
+            return new ApnSettings
             {
-                AppBundleIdentifier = appBundleIdentifier,
-                P8PrivateKey = p8privateKey,
-                P8PrivateKeyId = p8privateKeyId,
-                TeamId = teamId,
-                ServerType = server,
+                AppBundleIdentifier = config.AppBundleIdentifier,
+                P8PrivateKey = config.P8privateKey,
+                P8PrivateKeyId = config.P8privateKeyId,
+                TeamId = config.TeamId,
+                ServerType = config.IsDevelopment ? ApnServerType.Development : ApnServerType.Production,
             };
-
-            var notification = json["payload"].ToObject<AppleNotification>();
-
-            var apn = new ApnSender(settings, http);
-            var response = await apn.SendAsync(notification, deviceToken);
-            Console.WriteLine($"Response: {JsonConvert.SerializeObject(response)}");
         }
     }
 
-    public class AppleNotification {
+    internal class AppleConfig
+    {
+        [JsonPropertyName("p8privateKey")]
+        public string P8privateKey { get; set; }
+        
+        [JsonPropertyName("p8privateKeyId")]
+        public string P8privateKeyId { get; set; }
 
-        [JsonProperty ("aps")]
-        public ApsPayload Aps { get; set; }
+        [JsonPropertyName("teamId")]
+        public string TeamId { get; set; }
 
-        public class ApsPayload {
-            [JsonProperty ("alert")]
-            public string AlertBody { get; set; }
-        }
+        [JsonPropertyName("appBundleIdentifier")]
+        public string AppBundleIdentifier { get; set; }
 
+        [JsonPropertyName("server")]
+        public string Server { get; set; }
+
+        public bool IsDevelopment { get { return Server.Equals("Development") ? true : false; }}
+
+        [JsonPropertyName("deviceToken")]
+        public string DeviceToken { get; set; }
+
+        [JsonPropertyName("payload")]
+        public ApsPayload Payload { get; set; }
+    }
+
+    internal class ApsPayload
+    {
+        [JsonPropertyName("aps")]
+        public ApsMessage Aps { get; set; }
+    }
+
+    internal class ApsMessage
+    {
+        [JsonPropertyName("alert")]
+        public string AlertBody { get; set; }
     }
 }

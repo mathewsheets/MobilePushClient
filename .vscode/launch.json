@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build.iOS",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/MobilePushClient.iOS/bin/Debug/netcoreapp3.1/MobilePushClient.iOS",
+            "program": "${workspaceFolder}/MobilePushClient.iOS/bin/Debug/net8.0/MobilePushClient.iOS",
             "args": [],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
@@ -23,7 +23,7 @@
             "request": "launch",
             "preLaunchTask": "build.Android",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/MobilePushClient.Android/bin/Debug/netcoreapp3.1/MobilePushClient.Android",
+            "program": "${workspaceFolder}/MobilePushClient.Android/bin/Debug/net8.0/MobilePushClient.Android",
             "args": [],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
